@@ -18,3 +18,7 @@ managed = true
 dev-dependencies = ["setuptools~=67.8.0"]
 [tool.hatch.metadata]
 allow-direct-references = true
+
+[[tool.rye.sources]]
+name = "tsinghua"
+url = "https://pypi.tuna.tsinghua.edu.cn/simple"
