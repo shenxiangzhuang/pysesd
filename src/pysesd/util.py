@@ -44,6 +44,13 @@ def esd_test(data: np.array,
 
 
 def calc_test_statistic(data: np.ma.array, hybrid: bool = False) -> (float, int):
+    """
+    The calc_test_statistic function calculates the test statistic for a given data set.
+
+    :param data: Pass the data to be tested
+    :param hybrid: Determine whether to use the mean or median(hybrid) for the location parameter
+    :return: A tuple of the test statistic and its index
+    """
     if hybrid:
         loc_value = np.mean(data)
         scale_value = np.std(data)
@@ -61,6 +68,13 @@ def calc_test_statistic(data: np.ma.array, hybrid: bool = False) -> (float, int)
 
 
 def calculate_stl_residual(data: np.ndarray, period: Optional[int] = None) -> np.ndarray:
+    """
+    The calculate_stl_residual function takes a time series and returns the STL residuals.
+
+    :param data: Pass the data to be used in the stl decomposition
+    :param period: Specify the period of the time series
+    :return: The residuals of the stl decomposition
+    """
     stl = STL(data, period=period, robust=True)
     decomposition = stl.fit()
     residual = data - decomposition.seasonal - np.median(data)
@@ -68,6 +82,12 @@ def calculate_stl_residual(data: np.ndarray, period: Optional[int] = None) -> np
 
 
 def calculate_density_highest_frequency(data: np.ndarray) -> float:
+    """
+    The calculate_density_highest_frequency function calculates the highest frequency of a given data set.
+
+    :param data: Pass the data to the function
+    :return: The highest frequency of the data
+    """
     freq, density = scipy.signal.periodogram(data)
     highest_freq = freq[np.argmax(density)]
     return highest_freq

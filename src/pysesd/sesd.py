@@ -2,9 +2,8 @@ from typing import Optional, List
 
 import matplotlib.pyplot as plt
 import pandas as pd
-import scipy.signal
 
-from pysesd.util import esd_test, calculate_stl_residual, calculate_density_highest_frequency
+from pysesd.util import esd_test, calculate_stl_residual
 
 
 class SESD:
@@ -13,7 +12,18 @@ class SESD:
                  hybrid: bool = False,
                  period: Optional[int] = None,
                  max_outliers: Optional[int] = None,
-                 ) -> None:
+                 ):
+        """
+        The __init__ function is called when the class is instantiated.
+        It sets up the attributes of an instance of a class.
+
+        :param alpha: Set the significance level
+        :param hybrid: Determine whether the algorithm is hybrid or not
+        :param period: Specify the period of the time series
+        :param max_outliers: Specify the maximum number of outliers that can be detected
+        :param : Set the alpha value for the test
+        :return: None
+        """
         self.alpha = alpha
         self.hybrid = hybrid
         self.period = period
@@ -24,6 +34,12 @@ class SESD:
 
     def fit(self, ts: pd.Series) -> List[int]:
         # TODO: ts index/NA check
+        """
+        The fit function takes a time series and returns the indices of outliers.
+
+        :param ts: pd.Series: Pass in the time series data
+        :return: The list of outliers
+        """
         self.ts = ts
         # parameter check: max_outliers
         n = len(ts)
@@ -33,13 +49,15 @@ class SESD:
         if self.period is None:
             # self.period = int(1 / calculate_density_highest_frequency(ts.values))
             self.period = int(n * 0.2)
-            print(f"Period: {self.period}")
         # calc STL residual
         residuals = calculate_stl_residual(ts.values, period=self.period)
         self.outliers = esd_test(residuals, self.alpha, self.hybrid, self.max_outliers)
         return self.outliers
 
     def plot(self):
+        """
+        The plot function plots the time series and any detected anomalies.
+        """
         timestamps = self.ts.index
         values = self.ts.values
         _, ax = plt.subplots(figsize=(10, 6))

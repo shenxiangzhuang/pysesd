@@ -5,7 +5,11 @@ from pysesd.sesd import SESD
 
 
 def get_ts():
-    # Create some sample data
+    """
+    The get_ts function creates a random time series with two outliers.
+
+    :return: A time series
+    """
     dates = pd.date_range(start='2023-01-01', end='2023-06-19', freq='D')
     values = np.random.random(len(dates))
     values[42] = 10
@@ -16,6 +20,13 @@ def get_ts():
 
 
 def run():
+    """
+    The run function is the main function of this module.
+    It will be called by the user to run the SESD algorithm on a time series.
+
+
+    :return: The list of outliers
+    """
     ts = get_ts()
     sesd = SESD(alpha=0.05, hybrid=False, max_outliers=2)
     outliers = sesd.fit(ts)
