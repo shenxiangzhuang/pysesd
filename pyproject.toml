@@ -15,7 +15,10 @@ build-backend = "hatchling.build"
 
 [tool.rye]
 managed = true
-dev-dependencies = ["setuptools~=67.8.0"]
+dev-dependencies = [
+    "setuptools~=67.8.0",
+    "ipython>=8.12.2",
+]
 [tool.hatch.metadata]
 allow-direct-references = true
 

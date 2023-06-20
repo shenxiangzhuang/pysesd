@@ -79,15 +79,3 @@ def calculate_stl_residual(data: np.ndarray, period: Optional[int] = None) -> np
     decomposition = stl.fit()
     residual = data - decomposition.seasonal - np.median(data)
     return residual
-
-
-def calculate_density_highest_frequency(data: np.ndarray) -> float:
-    """
-    The calculate_density_highest_frequency function calculates the highest frequency of a given data set.
-
-    :param data: Pass the data to the function
-    :return: The highest frequency of the data
-    """
-    freq, density = scipy.signal.periodogram(data)
-    highest_freq = freq[np.argmax(density)]
-    return highest_freq

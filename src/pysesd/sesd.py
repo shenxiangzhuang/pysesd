@@ -2,8 +2,12 @@ from typing import Optional, List
 
 import matplotlib.pyplot as plt
 import pandas as pd
+import logging
+import pathlib
 
 from pysesd.util import esd_test, calculate_stl_residual
+
+logger = logging.getLogger(__name__)
 
 
 class SESD:
@@ -40,6 +44,15 @@ class SESD:
         :param ts: pd.Series: Pass in the time series data
         :return: The list of outliers
         """
+        # data check: ts
+        if not isinstance(ts.index, pd.DatetimeIndex):
+            try:
+                ts.index = pd.DatetimeIndex(ts.index)
+            except Exception as e:
+                msg = f"The ts data's type is {type(ts.index)} which can't be converted to `pd.DatetimeIndex`: {e}"
+                logger.error(msg)
+                raise ValueError(msg)
+
         self.ts = ts
         # parameter check: max_outliers
         n = len(ts)
@@ -47,27 +60,54 @@ class SESD:
             raise ValueError(f"max_outliers = {self.max_outliers} >= {n // 2}({n} // 2)")
         # parameter check: period
         if self.period is None:
-            # self.period = int(1 / calculate_density_highest_frequency(ts.values))
-            self.period = int(n * 0.2)
+            self.period = self.__infer_period(ts.index)
         # calc STL residual
         residuals = calculate_stl_residual(ts.values, period=self.period)
         self.outliers = esd_test(residuals, self.alpha, self.hybrid, self.max_outliers)
         return self.outliers
 
-    def plot(self):
+    @staticmethod
+    def __infer_period(datetime_index: pd.DatetimeIndex) -> int:
         """
-        The plot function plots the time series and any detected anomalies.
+        Reference: https://github.com/twitter/AnomalyDetection/blob/1f5deaa1609f8f1964c1e905c7a8ad2d1d0dc718/R/ts_anom_detection.R#LL168C1-L173C27  # NOQA
+        :param datetime_index: The time series' index
+        :return: The inferred period
+        """
+        infer_freq = pd.infer_freq(datetime_index)
+        if infer_freq == "S":  # second -> one day
+            period = 86400
+        elif infer_freq == "T" or infer_freq == "min":
+            period = int(86400 / 60)  # minute -> one day
+        elif infer_freq == "H":
+            period = int(86400 / 3600)  # hour -> one day
+        elif infer_freq == "D":  # day -> one week
+            period = 7
+        else:  # TODO: more elegant handle method
+            period = int(0.1 * len(datetime_index))
+        return period
+
+    def plot(self, save: bool = True, fig_name: str = "sesd.png", fig_dir: str = "../figures"):
+        """
+        The plot function plots the time series and the anomaly points.
+
+        :param self: Represent the instance of the class
+        :param save: Determine whether the plot should be saved or not
+        :param fig_name: Name the file that is saved
+        :param fig_dir: Specify the directory where the figure will be saved
+        :return: None
         """
         timestamps = self.ts.index
         values = self.ts.values
+
+        plt.style.use('ggplot')
         _, ax = plt.subplots(figsize=(10, 6))
 
         # Create a plot for the time series
-        ax.plot(timestamps, values)
+        ax.plot(timestamps, values, color="lightcoral")
 
         # Plot the anomaly points
         for point_index in self.outliers:
-            ax.plot(timestamps[point_index], values[point_index], 'r*', markersize=10)
+            ax.plot(timestamps[point_index], values[point_index], color="cyan", marker="*", markersize=10)
 
         # Set the title and axis labels
         ax.set_title('S-ESH')
@@ -75,7 +115,10 @@ class SESD:
         ax.set_ylabel('Value')
         # Add a legend
         ax.legend(['Time Series', 'Anomaly Points'])
-        # Show the plot
+        plt.xticks(rotation=60)
         plt.tight_layout()
-        plt.savefig("sesd.png", dpi=300)
+        if save:
+            pathlib.Path(fig_dir).mkdir(parents=True, exist_ok=True)
+            fig_path = f"{fig_dir}/{fig_name}"
+            plt.savefig(fig_path, dpi=300)
         plt.show()

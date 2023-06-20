@@ -30,8 +30,8 @@ def run():
     ts = get_ts()
     sesd = SESD(alpha=0.05, hybrid=False, max_outliers=2)
     outliers = sesd.fit(ts)
-    print(outliers)
-    sesd.plot()
+    print(f"Got {len(outliers)} in {len(ts)} points, anomaly index: {outliers}")
+    sesd.plot(save=True, fig_dir="../figures", fig_name="simple.png")
 
 
 if __name__ == '__main__':
