@@ -6,7 +6,7 @@ from statsmodels.tsa.seasonal import STL
 
 
 def esd_test(
-    data: np.array,
+    data: np.ndarray,
     alpha: float = 0.05,
     hybrid: bool = False,
     max_outliers: Optional[int] = None,
@@ -24,14 +24,14 @@ def esd_test(
     if max_outliers is None:
         max_outliers = len(data) // 2
 
-    data = np.ma.array(data)
+    masked_data: np.ma.MaskedArray = np.ma.array(data)
     outliers = []
 
     for _ in range(max_outliers):
-        test_statistic, test_statistic_idx = calc_test_statistic(data, hybrid)
+        test_statistic, test_statistic_idx = calc_test_statistic(masked_data, hybrid)
 
         # Compute the critical value
-        n = len(data) - data.mask.sum()
+        n = len(masked_data) - masked_data.mask.sum()  # NOQA
         t_value = scipy.stats.t.ppf(1 - alpha / (2 * n), n - 2)
         critical_value = (
             (n - 1)
@@ -42,14 +42,16 @@ def esd_test(
         # Compare the test statistic with the critical value
         if test_statistic > critical_value:
             outliers.append(test_statistic_idx)
-            data[test_statistic_idx] = np.ma.masked
+            masked_data[test_statistic_idx] = np.ma.masked
         else:
             break
 
     return outliers
 
 
-def calc_test_statistic(data: np.ma.array, hybrid: bool = False) -> Tuple(float, int):
+def calc_test_statistic(
+    data: np.ma.MaskedArray, hybrid: bool = False
+) -> Tuple[float, int]:
     """
     The calc_test_statistic function calculates the test statistic for a given data set.
 
@@ -67,8 +69,8 @@ def calc_test_statistic(data: np.ma.array, hybrid: bool = False) -> Tuple(float,
     abs_dev_value = np.abs(data - loc_value)
     max_dev_value_index = np.argmax(abs_dev_value)
     max_dev_value = abs_dev_value[max_dev_value_index]
-    test_statistic = max_dev_value / scale_value
-    test_statistic_index = max_dev_value_index
+    test_statistic = float(max_dev_value / scale_value)
+    test_statistic_index = int(max_dev_value_index)
 
     return test_statistic, test_statistic_index
 
