@@ -21,11 +21,11 @@ pip install pysesd
 
 ## Simple example
 
-![](./figures/simple.png)
+![](https://raw.githubusercontent.com/shenxiangzhuang/pysesd/master/figures/simple.png)
 
 ## Twitter example
 
-![](./figures/twitter.png)
+![](https://raw.githubusercontent.com/shenxiangzhuang/pysesd/master/figures/twitter.png)
 
 
 # References

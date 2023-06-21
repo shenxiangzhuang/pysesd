@@ -9,7 +9,11 @@ def get_ts():
 
     :return: A time series
     """
-    ts = pd.read_csv("../dataset/twitter_raw_data.csv", parse_dates=["timestamp"], index_col=["timestamp"])
+    ts = pd.read_csv(
+        "../dataset/twitter_raw_data.csv",
+        parse_dates=["timestamp"],
+        index_col=["timestamp"],
+    )
     ts = ts.iloc[:, 0]
     ts.index = pd.DatetimeIndex(ts.index)
     return ts
@@ -29,5 +33,5 @@ def run():
     sesd.plot(save=True, fig_dir="../figures", fig_name="twitter.png")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     run()

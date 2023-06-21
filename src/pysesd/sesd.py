@@ -1,22 +1,23 @@
-from typing import Optional, List
+import logging
+import pathlib
+from typing import List, Optional
 
 import matplotlib.pyplot as plt
 import pandas as pd
-import logging
-import pathlib
 
-from pysesd.util import esd_test, calculate_stl_residual
+from pysesd.util import calculate_stl_residual, esd_test
 
 logger = logging.getLogger(__name__)
 
 
 class SESD:
-    def __init__(self,
-                 alpha: float = 0.05,
-                 hybrid: bool = False,
-                 period: Optional[int] = None,
-                 max_outliers: Optional[int] = None,
-                 ):
+    def __init__(
+        self,
+        alpha: float = 0.05,
+        hybrid: bool = False,
+        period: Optional[int] = None,
+        max_outliers: Optional[int] = None,
+    ):
         """
         The __init__ function is called when the class is instantiated.
         It sets up the attributes of an instance of a class.
@@ -56,8 +57,12 @@ class SESD:
         self.ts = ts
         # parameter check: max_outliers
         n = len(ts)
-        if self.max_outliers >= n // 2:
-            raise ValueError(f"max_outliers = {self.max_outliers} >= {n // 2}({n} // 2)")
+        if self.max_outliers is None:
+            self.max_outliers = 1
+        elif self.max_outliers >= n // 2:
+            raise ValueError(
+                f"max_outliers = {self.max_outliers} >= {n // 2}({n} // 2)"
+            )
         # parameter check: period
         if self.period is None:
             self.period = self.__infer_period(ts.index)
@@ -86,7 +91,9 @@ class SESD:
             period = int(0.1 * len(datetime_index))
         return period
 
-    def plot(self, save: bool = True, fig_name: str = "sesd.png", fig_dir: str = "../figures"):
+    def plot(
+        self, save: bool = True, fig_name: str = "sesd.png", fig_dir: str = "../figures"
+    ):
         """
         The plot function plots the time series and the anomaly points.
 
@@ -94,12 +101,11 @@ class SESD:
         :param save: Determine whether the plot should be saved or not
         :param fig_name: Name the file that is saved
         :param fig_dir: Specify the directory where the figure will be saved
-        :return: None
         """
         timestamps = self.ts.index
         values = self.ts.values
 
-        plt.style.use('ggplot')
+        plt.style.use("ggplot")
         _, ax = plt.subplots(figsize=(10, 6))
 
         # Create a plot for the time series
@@ -107,14 +113,20 @@ class SESD:
 
         # Plot the anomaly points
         for point_index in self.outliers:
-            ax.plot(timestamps[point_index], values[point_index], color="cyan", marker="*", markersize=10)
+            ax.plot(
+                timestamps[point_index],
+                values[point_index],
+                color="cyan",
+                marker="*",
+                markersize=10,
+            )
 
         # Set the title and axis labels
-        ax.set_title('S-ESH')
-        ax.set_xlabel('Date')
-        ax.set_ylabel('Value')
+        ax.set_title("S-ESH")
+        ax.set_xlabel("Date")
+        ax.set_ylabel("Value")
         # Add a legend
-        ax.legend(['Time Series', 'Anomaly Points'])
+        ax.legend(["Time Series", "Anomaly Points"])
         plt.xticks(rotation=60)
         plt.tight_layout()
         if save:

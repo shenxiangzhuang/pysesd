@@ -1,5 +1,5 @@
-import pandas as pd
 import numpy as np
+import pandas as pd
 
 from pysesd.sesd import SESD
 
@@ -10,7 +10,7 @@ def get_ts():
 
     :return: A time series
     """
-    dates = pd.date_range(start='2023-01-01', end='2023-06-19', freq='D')
+    dates = pd.date_range(start="2023-01-01", end="2023-06-19", freq="D")
     values = np.random.random(len(dates))
     values[42] = 10
     values[24] = 20
@@ -34,5 +34,5 @@ def run():
     sesd.plot(save=True, fig_dir="../figures", fig_name="simple.png")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     run()
