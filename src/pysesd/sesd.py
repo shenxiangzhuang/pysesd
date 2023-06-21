@@ -3,6 +3,7 @@ import pathlib
 from typing import List, Optional
 
 import matplotlib.pyplot as plt
+import numpy as np
 import pandas as pd
 
 from pysesd.util import calculate_stl_residual, esd_test
@@ -34,8 +35,8 @@ class SESD:
         self.period = period
         self.max_outliers = max_outliers
         # for plot
-        self.outliers = None
-        self.ts = None
+        self.outliers: Optional[List[int]] = None
+        self.ts: Optional[pd.Series] = None
 
     def fit(self, ts: pd.Series) -> List[int]:
         # TODO: ts index/NA check
@@ -67,7 +68,7 @@ class SESD:
         if self.period is None:
             self.period = self.__infer_period(ts.index)
         # calc STL residual
-        residuals = calculate_stl_residual(ts.values, period=self.period)
+        residuals = calculate_stl_residual(np.array(ts.values), period=self.period)
         self.outliers = esd_test(residuals, self.alpha, self.hybrid, self.max_outliers)
         return self.outliers
 
@@ -102,6 +103,8 @@ class SESD:
         :param fig_name: Name the file that is saved
         :param fig_dir: Specify the directory where the figure will be saved
         """
+        if self.ts is None or self.outliers is None:
+            raise ValueError("Please fit the model before plot")
         timestamps = self.ts.index
         values = self.ts.values
 

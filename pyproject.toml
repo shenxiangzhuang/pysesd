@@ -17,7 +17,7 @@ build-backend = "hatchling.build"
 managed = true
 dev-dependencies = [
     "setuptools~=67.8.0",
-    "ipython>=8.12.2", "mkdocs-material~=9.1.16", "mkdocs-material-extensions~=1.1.1", "mkdocstrings~=0.22.0", "mkdocs~=1.4.3", "mkdocs-bibtex~=2.9.0", "pre-commit~=3.3.3", "isort~=5.12.0", "flake8~=5.0.4", "black~=23.3.0", "mypy~=1.4.0",
+    "ipython>=8.12.2", "mkdocs-material~=9.1.16", "mkdocs-material-extensions~=1.1.1", "mkdocstrings~=0.22.0", "mkdocs~=1.4.3", "mkdocs-bibtex~=2.9.0", "pre-commit~=3.3.3", "isort~=5.12.0", "flake8~=5.0.4", "black~=23.3.0", "mypy~=1.4.0", "pandas-stubs~=2.0.2.230605",
 ]
 [tool.hatch.metadata]
 allow-direct-references = true
