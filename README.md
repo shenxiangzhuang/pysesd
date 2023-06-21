@@ -39,14 +39,30 @@ Get latest version from PyPI:
 pip install pysesd
 ```
 
-# Examples
+# Getting started
 
 ## Simple example
+```python
+from pysesd.dataset import load_synthetic_ts
+from pysesd.sesd import SESD
 
+ts = load_synthetic_ts()
+sesd = SESD(alpha=0.05, hybrid=False, max_outliers=2)
+outliers = sesd.fit(ts)
+sesd.plot(save=True, fig_dir="../figures", fig_name="simple.png")
+```
 ![](./figures/simple.png)
 
 ## Twitter example
+```python
+from pysesd.dataset import load_twitter_ts
+from pysesd.sesd import SESD
 
+ts = load_twitter_ts()
+sesd = SESD(alpha=0.05, hybrid=True, max_outliers=int(len(ts) * 0.02))
+outliers = sesd.fit(ts)
+sesd.plot(save=True, fig_dir="../figures", fig_name="twitter.png")
+```
 ![](./figures/twitter.png)
 
 
