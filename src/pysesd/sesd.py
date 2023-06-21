@@ -1,11 +1,11 @@
-from typing import Optional, List
+import logging
+import pathlib
+from typing import List, Optional
 
 import matplotlib.pyplot as plt
 import pandas as pd
-import logging
-import pathlib
 
-from pysesd.util import esd_test, calculate_stl_residual
+from pysesd.util import calculate_stl_residual, esd_test
 
 logger = logging.getLogger(__name__)
 
@@ -57,7 +57,9 @@ class SESD:
         self.ts = ts
         # parameter check: max_outliers
         n = len(ts)
-        if self.max_outliers >= n // 2:
+        if self.max_outliers is None:
+            self.max_outliers = 1
+        elif self.max_outliers >= n // 2:
             raise ValueError(
                 f"max_outliers = {self.max_outliers} >= {n // 2}({n} // 2)"
             )
@@ -99,7 +101,6 @@ class SESD:
         :param save: Determine whether the plot should be saved or not
         :param fig_name: Name the file that is saved
         :param fig_dir: Specify the directory where the figure will be saved
-        :return: None
         """
         timestamps = self.ts.index
         values = self.ts.values

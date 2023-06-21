@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List, Optional, Tuple
 
 import numpy as np
 import scipy
@@ -49,7 +49,7 @@ def esd_test(
     return outliers
 
 
-def calc_test_statistic(data: np.ma.array, hybrid: bool = False) -> (float, int):
+def calc_test_statistic(data: np.ma.array, hybrid: bool = False) -> Tuple(float, int):
     """
     The calc_test_statistic function calculates the test statistic for a given data set.
 
