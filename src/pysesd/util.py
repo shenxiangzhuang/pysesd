@@ -5,10 +5,12 @@ import scipy
 from statsmodels.tsa.seasonal import STL
 
 
-def esd_test(data: np.array,
-             alpha: float = 0.05,
-             hybrid: bool = False,
-             max_outliers: Optional[int] = None) -> List[int]:
+def esd_test(
+    data: np.array,
+    alpha: float = 0.05,
+    hybrid: bool = False,
+    max_outliers: Optional[int] = None,
+) -> List[int]:
     """
     Perform the Extreme Studentized Deviate (ESD) test to detect potential outliers in the data.
 
@@ -31,7 +33,11 @@ def esd_test(data: np.array,
         # Compute the critical value
         n = len(data) - data.mask.sum()
         t_value = scipy.stats.t.ppf(1 - alpha / (2 * n), n - 2)
-        critical_value = (n - 1) * t_value / np.sqrt(np.square((n - 2)) + (n - 2) * np.square(t_value))
+        critical_value = (
+            (n - 1)
+            * t_value
+            / np.sqrt(np.square((n - 2)) + (n - 2) * np.square(t_value))
+        )
 
         # Compare the test statistic with the critical value
         if test_statistic > critical_value:
@@ -67,7 +73,9 @@ def calc_test_statistic(data: np.ma.array, hybrid: bool = False) -> (float, int)
     return test_statistic, test_statistic_index
 
 
-def calculate_stl_residual(data: np.ndarray, period: Optional[int] = None) -> np.ndarray:
+def calculate_stl_residual(
+    data: np.ndarray, period: Optional[int] = None
+) -> np.ndarray:
     """
     The calculate_stl_residual function takes a time series and returns the STL residuals.
 
