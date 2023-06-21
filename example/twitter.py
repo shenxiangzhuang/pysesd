@@ -1,22 +1,5 @@
-import pandas as pd
-
+from pysesd.dataset import load_twitter_ts
 from pysesd.sesd import SESD
-
-
-def get_ts():
-    """
-    The get_ts function creates a random time series with two outliers.
-
-    :return: A time series
-    """
-    ts = pd.read_csv(
-        "../dataset/twitter_raw_data.csv",
-        parse_dates=["timestamp"],
-        index_col=["timestamp"],
-    )
-    ts = ts.iloc[:, 0]
-    ts.index = pd.DatetimeIndex(ts.index)
-    return ts
 
 
 def run():
@@ -26,11 +9,11 @@ def run():
 
     :return: The list of outliers
     """
-    ts = get_ts()
+    ts = load_twitter_ts()
     sesd = SESD(alpha=0.05, hybrid=True, max_outliers=int(len(ts) * 0.02))
     outliers = sesd.fit(ts)
-    print(f"Got {len(outliers)} in {len(ts)} points, anomaly index: {outliers}")
     sesd.plot(save=True, fig_dir="../figures", fig_name="twitter.png")
+    print(f"Got {len(outliers)} in {len(ts)} points, anomaly index: {outliers}")
 
 
 if __name__ == "__main__":

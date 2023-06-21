@@ -1,22 +1,5 @@
-import numpy as np
-import pandas as pd
-
+from pysesd.dataset import load_synthetic_ts
 from pysesd.sesd import SESD
-
-
-def get_ts():
-    """
-    The get_ts function creates a random time series with two outliers.
-
-    :return: A time series
-    """
-    dates = pd.date_range(start="2023-01-01", end="2023-06-19", freq="D")
-    values = np.random.random(len(dates))
-    values[42] = 10
-    values[24] = 20
-
-    ts = pd.Series(data=values, index=dates)
-    return ts
 
 
 def run():
@@ -27,11 +10,11 @@ def run():
 
     :return: The list of outliers
     """
-    ts = get_ts()
+    ts = load_synthetic_ts()
     sesd = SESD(alpha=0.05, hybrid=False, max_outliers=2)
     outliers = sesd.fit(ts)
-    print(f"Got {len(outliers)} in {len(ts)} points, anomaly index: {outliers}")
     sesd.plot(save=True, fig_dir="../figures", fig_name="simple.png")
+    print(f"Got {len(outliers)} in {len(ts)} points, anomaly index: {outliers}")
 
 
 if __name__ == "__main__":
