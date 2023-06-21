@@ -39,7 +39,7 @@ Get latest version from PyPI:
 pip install pysesd
 ```
 
-# Examples
+# Getting started
 
 ## Simple example
 ```python
